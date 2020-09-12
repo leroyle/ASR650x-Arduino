@@ -82,16 +82,24 @@ enum eDeviceState_LoraWan deviceState;
 /*!
  * \brief   Prepares the payload of the frame
  *
+ * \param   [IN] sendStatus - Pointer to an instance of LoRaMacStatus_t
+ *               for returning status of send
+ *
  * \retval  [0: frame could be send, 1: error]
  */
-bool SendFrame( void )
+bool SendFrame( LoRaMacStatus_t * sendStatus)
 {
 	lwan_dev_params_update();
 	
 	McpsReq_t mcpsReq;
 	LoRaMacTxInfo_t txInfo;
+	LoRaMacStatus_t macStatus = LORAMAC_STATUS_OK;
+        LoRaMacStatus_t packetLenStatus;
 
-	if( LoRaMacQueryTxPossible( appDataSize, &txInfo ) != LORAMAC_STATUS_OK )
+        *sendStatus = LORAMAC_STATUS_OK;
+        packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo );
+
+        if( packetLenStatus != LORAMAC_STATUS_OK )
 	{
 		// Send empty frame in order to flush MAC commands
 		mcpsReq.Type = MCPS_UNCONFIRMED;
@@ -121,10 +129,24 @@ bool SendFrame( void )
 			mcpsReq.Req.Confirmed.Datarate = default_DR;
 		}
 	}
-	if( LoRaMacMcpsRequest( &mcpsReq ) == LORAMAC_STATUS_OK )
+
+        macStatus = LoRaMacMcpsRequest( &mcpsReq );
+
+        // set status for app layer
+        if (packetLenStatus != LORAMAC_STATUS_OK) {
+                *sendStatus = packetLenStatus;
+        } else if (macStatus != LORAMAC_STATUS_OK) {
+                *sendStatus = macStatus;
+        }
+        // return false after good transmission so that we adhere
+        // to duty cycle and do not send next transmission too soon
+        // a periodic timer will re-enable the next send time
+        if( macStatus == LORAMAC_STATUS_OK )
 	{
 		return false;
 	}
+	// return true indicates send failed, we can immediately attempt
+	// another send
 	return true;
 }
 
@@ -612,8 +634,10 @@ void LoRaWanClass::join()
 	}
 }
 
-void LoRaWanClass::send()
+LoRaMacStatus_t LoRaWanClass::send()
 {
+	LoRaMacStatus_t sendStatus;
+
 	if( nextTx == true )
 	{
 		MibRequestConfirm_t mibReq;
@@ -626,7 +650,8 @@ void LoRaWanClass::send()
 			LoRaMacMibSetRequestConfirm( &mibReq );
 		}
 		
-		nextTx = SendFrame( );
+		nextTx = SendFrame(&sendStatus);
+		return sendStatus;
 	}
 }
 
