@@ -35,7 +35,11 @@ CubeCell_NeoPixel pixels(1, RGB, NEO_GRB + NEO_KHZ800);
 #endif
 
 /*loraWan default Dr for ADR when adr disabled*/
+#if defined(REGION_US915) || defined(REGION_US915_HYBRID)
+int8_t default_DR = 3;
+#else
 int8_t default_DR = 5;
+#endif
 
 /*!
  * User application data size
@@ -102,6 +106,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
         if( packetLenStatus != LORAMAC_STATUS_OK )
 	{
 		// Send empty frame in order to flush MAC commands
+		printf("send empty frame in order to flush MAC commands ... size: %d\r\n", appDataSize);
 		mcpsReq.Type = MCPS_UNCONFIRMED;
 		mcpsReq.Req.Unconfirmed.fBuffer = NULL;
 		mcpsReq.Req.Unconfirmed.fBufferSize = 0;
@@ -111,7 +116,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 	{
 		if( isTxConfirmed == false )
 		{
-			printf("unconfirmed uplink sending ...\r\n");
+			printf("unconfirmed uplink sending ... size: %d\r\n", appDataSize);
 			mcpsReq.Type = MCPS_UNCONFIRMED;
 			mcpsReq.Req.Unconfirmed.fPort = appPort;
 			mcpsReq.Req.Unconfirmed.fBuffer = appData;
@@ -120,7 +125,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 		}
 		else
 		{
-			printf("confirmed uplink sending ...\r\n");
+			printf("confirmed uplink sending ... size: %d\r\n", appDataSize);
 			mcpsReq.Type = MCPS_CONFIRMED;
 			mcpsReq.Req.Confirmed.fPort = appPort;
 			mcpsReq.Req.Confirmed.fBuffer = appData;
