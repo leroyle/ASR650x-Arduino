@@ -1,3 +1,12 @@
+#  leroyle NOTE: any changes to this fork may or may not end up in the offical Heltec release, consumer beware
+
+Sept 14:  Closed issues
+   - #4 Radio.SetTxConfig() preamble length param changed from 8 to 14, prevents joins
+   - #3 The user should have a way to set the LoRaWAN Data Rate, either dynamically or via app sketch #define
+   - #1 LoRaWAN::send() should notify caller of success/failure
+
+
+End of updates from leroyle
 # Heltec ASR650x Series Arduino Development Environment
 
 English | [简体中文](#简体中文) &nbsp;&nbsp; [![Build Status](https://travis-ci.org/HelTecAutomation/ASR650x-Arduino.png?branch=master)](https://travis-ci.org/HelTecAutomation/ASR650x-Arduino "Build Status")
