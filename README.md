@@ -12,11 +12,16 @@ PlatformioL Linux:  ~/.platformio/packages/framework-arduinoasrmicro650x
 
 We will periodically try to pull in any changes that Heltec commits, but no guarantees.
 
+Sept 18  Closed issues
+   - #2  LoRaWAN gives user false illusion of transmit success if payload exceeds max for DR
+   - #5  LoRaWan: LoRaMac.c - ValidatePayloadLength( ) fails to catch too large payload if fOptsLen != 0
+   - #6  Heltec added a set data rate API, need a get data rate api
+
 Sept 14:  Closed issues
    - #4 Radio.SetTxConfig() preamble length param changed from 8 to 14, prevents joins
    - #3 The user should have a way to set the LoRaWAN Data Rate, either dynamically or via app sketch #define
    - #1 LoRaWAN::send() should notify caller of success/failure
-
+ 
 
 End of updates from leroyle
 # Heltec ASR650x Series Arduino Development Environment
