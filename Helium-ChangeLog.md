@@ -37,7 +37,7 @@ The runtime would actually "send" the oversize packet if there was a pending MAC
 If there is an oversize packet and a pending MAC response, the runtime will only send the MAC response and will return an error status to the app layer.
 
 If the DR_ length allows both the user data and the MAC response will be sent to the network.
-### Problem:
+#### Problem:
 The runtime would send a zero length packet each time the user attempted to send the oversize packet even if there was not a pending MAC response
  #### fix:
  We now error out, do not send to the network and return fail status to the app layer
