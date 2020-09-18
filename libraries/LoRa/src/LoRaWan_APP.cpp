@@ -680,6 +680,11 @@ void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 	default_DR = dataRate;
 }
 
+int8_t LoRaWanClass::getDataRateForNoADR()
+{
+	return default_DR;
+}
+
 void LoRaWanClass::ifskipjoin()
 {
 //if saved net info is OK in lorawan mode, skip join.
