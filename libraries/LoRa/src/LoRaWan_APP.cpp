@@ -101,12 +101,11 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
         LoRaMacStatus_t packetLenStatus;
 
         *sendStatus = LORAMAC_STATUS_OK;
-        packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo );
+        packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo, default_DR );
 
         if( packetLenStatus != LORAMAC_STATUS_OK )
 	{
 		// Send empty frame in order to flush MAC commands
-		printf("send empty frame in order to flush MAC commands ... size: %d\r\n", appDataSize);
 		mcpsReq.Type = MCPS_UNCONFIRMED;
 		mcpsReq.Req.Unconfirmed.fBuffer = NULL;
 		mcpsReq.Req.Unconfirmed.fBufferSize = 0;
@@ -116,7 +115,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 	{
 		if( isTxConfirmed == false )
 		{
-			printf("unconfirmed uplink sending ... size: %d\r\n", appDataSize);
+			printf("** unconfirmed uplink send attempt ... size: %d\r\n", appDataSize);
 			mcpsReq.Type = MCPS_UNCONFIRMED;
 			mcpsReq.Req.Unconfirmed.fPort = appPort;
 			mcpsReq.Req.Unconfirmed.fBuffer = appData;
@@ -125,7 +124,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 		}
 		else
 		{
-			printf("confirmed uplink sending ... size: %d\r\n", appDataSize);
+			printf("** confirmed uplink send attempt ... size: %d\r\n", appDataSize);
 			mcpsReq.Type = MCPS_CONFIRMED;
 			mcpsReq.Req.Confirmed.fPort = appPort;
 			mcpsReq.Req.Confirmed.fBuffer = appData;
@@ -291,8 +290,8 @@ uint16_t getBatteryVoltage(void)
 
 void __attribute__((weak)) downLinkDataHandle(McpsIndication_t *mcpsIndication)
 {
-	printf("+REV DATA:%s,RXSIZE %d,PORT %d\r\n",mcpsIndication->RxSlot?"RXWIN2":"RXWIN1",mcpsIndication->BufferSize,mcpsIndication->Port);
-	printf("+REV DATA:");
+	printf("** +REV DATA:%s,RXSIZE %d,PORT %d\r\n",mcpsIndication->RxSlot?"RXWIN2":"RXWIN1",mcpsIndication->BufferSize,mcpsIndication->Port);
+	printf("** +REV DATA:\t");
 	for(uint8_t i=0;i<mcpsIndication->BufferSize;i++)
 	{
 		printf("%02X",mcpsIndication->Buffer[i]);
@@ -315,7 +314,7 @@ static void McpsIndication( McpsIndication_t *mcpsIndication )
 #if defined(CubeCell_BoardPlus)||defined(CubeCell_GPS)
 	ifDisplayAck=1;
 #endif
-	printf( "receive data: rssi = %d, snr = %d, datarate = %d\r\n", mcpsIndication->Rssi, (int)mcpsIndication->Snr,(int)mcpsIndication->RxDatarate);
+	WARN_PRINTF( "** receive data: rssi = %d, snr = %d, datarate = %d\r\n", mcpsIndication->Rssi, (int)mcpsIndication->Snr,(int)mcpsIndication->RxDatarate);
 
 #if (LoraWan_RGB==1)
 	turnOnRGB(COLOR_RECEIVED, 200);
@@ -368,7 +367,7 @@ static void McpsIndication( McpsIndication_t *mcpsIndication )
 
 void __attribute__((weak)) dev_time_updated()
 {
-	printf("device time updated\r\n");
+	printf("** device time updated\r\n");
 }
 
 /*!
@@ -396,7 +395,7 @@ static void MlmeConfirm( MlmeConfirm_t *mlmeConfirm )
 					LoRaWAN.displayJoined();
 				}
 #endif
-				printf("joined\r\n");
+				printf("** joined\r\n");
 				
 				//in PassthroughMode,do nothing while joined
 				if(passthroughMode == false)
@@ -408,7 +407,7 @@ static void MlmeConfirm( MlmeConfirm_t *mlmeConfirm )
 			else
 			{
 				uint32_t rejoin_delay = 30000;
-				printf("join failed, join again at 30s later\r\n");
+				printf("** join failed, join again at 30s later\r\n");
 				TimerSetValue( &TxNextPacketTimer, rejoin_delay );
 				TimerStart( &TxNextPacketTimer );
 			}
@@ -507,7 +506,7 @@ uint8_t BoardGetBatteryLevel()
 	const double minBattery = 3.7;
 	const double batVoltage = fmax(minBattery, fmin(maxBattery, getBatteryVoltage() / 1000.0));
 	const uint8_t batlevel = BAT_LEVEL_EMPTY + ((batVoltage - minBattery) / (maxBattery - minBattery)) * (BAT_LEVEL_FULL - BAT_LEVEL_EMPTY);
-	//printf("battery level (1-254): %u\n", batlevel);
+	//printf("** battery level (1-254): %u\r\n", batlevel);
 	return batlevel;
 }
 
@@ -526,41 +525,41 @@ void LoRaWanClass::generateDeveuiByChipID()
 
 void LoRaWanClass::init(DeviceClass_t lorawanClass,LoRaMacRegion_t region)
 {
-	Serial.print("\r\nLoRaWAN ");
+	Serial.print("\r\n** LoRaWAN ");
 	switch(region)
 	{
 		case LORAMAC_REGION_AS923:
-			Serial.print("AS923");
+			Serial.print("** AS923");
 			break;
 		case LORAMAC_REGION_AU915:
-			Serial.print("AU915");
+			Serial.print("** AU915");
 			break;
 		case LORAMAC_REGION_CN470:
-			Serial.print("CN470");
+			Serial.print("** CN470");
 			break;
 		case LORAMAC_REGION_CN779:
-			Serial.print("CN779");
+			Serial.print("** CN779");
 			break;
 		case LORAMAC_REGION_EU433:
-			Serial.print("EU433");
+			Serial.print("** EU433");
 			break;
 		case LORAMAC_REGION_EU868:
-			Serial.print("EU868");
+			Serial.print("** EU868");
 			break;
 		case LORAMAC_REGION_KR920:
-			Serial.print("KR920");
+			Serial.print("** KR920");
 			break;
 		case LORAMAC_REGION_IN865:
-			Serial.print("IN865");
+			Serial.print("** IN865");
 			break;
 		case LORAMAC_REGION_US915:
-			Serial.print("US915");
+			Serial.print("** US915");
 			break;
 		case LORAMAC_REGION_US915_HYBRID:
-			Serial.print("US915_HYBRID ");
+			Serial.print("** US915_HYBRID ");
 			break;
 	}
-	Serial.printf(" Class %X start!\r\n\r\n",loraWanClass+10);
+	Serial.printf("**  Class %X start!\r\n\r\n",loraWanClass+10);
 
 	MibRequestConfirm_t mibReq;
 
@@ -592,7 +591,7 @@ void LoRaWanClass::join()
 {
 	if( overTheAirActivation )
 	{
-		Serial.print("joining...");
+		Serial.print("** joining...\r\n");
 		MlmeReq_t mlmeReq;
 		
 		mlmeReq.Type = MLME_JOIN;
@@ -656,6 +655,10 @@ LoRaMacStatus_t LoRaWanClass::send()
 		}
 		
 		nextTx = SendFrame(&sendStatus);
+		if (sendStatus != LORAMAC_STATUS_OK)
+		{
+			printf("** send failed: Error code ...  %d\r\n", sendStatus);
+		}
 		return sendStatus;
 	}
 }
@@ -684,7 +687,7 @@ void LoRaWanClass::ifskipjoin()
 		Serial.println();
 		if(passthroughMode==false)
 		{
-			Serial.println("Wait 3s for user key to rejoin network");
+			Serial.println("** Wait 3s for user key to rejoin network");
 			uint16_t i=0;
 			pinMode(GPIO7,INPUT);
 			while(i<=3000)
@@ -709,16 +712,16 @@ void LoRaWanClass::ifskipjoin()
 		init(loraWanClass,loraWanRegion);
 		getNetInfo();
 		if(passthroughMode==false){
-			Serial.println("User key not detected,Use reserved Net");
+			Serial.println("** User key not detected,Use reserved Net");
 		}
 		else{
-			Serial.println("Use reserved Net");
+			Serial.println("** Use reserved Net");
 		}
 		if(passthroughMode==false)
 		{
 			int32_t temp=randr(0,appTxDutyCycle);
 			Serial.println();
-			Serial.printf("Next packet send %d ms later(random time from 0 to APP_TX_DUTYCYCLE)\r\n",temp);
+			Serial.printf("** Next packet send %d ms later(random time from 0 to APP_TX_DUTYCYCLE)\r\n",temp);
 			Serial.println();
 			cycle(temp);//send packet in a random time to avoid network congestion.
 		}
@@ -791,6 +794,7 @@ void LoRaWanClass::displayMcuInit()
 	display.display();
 	delay(2000);
 }
+
 #endif
 
 LoRaWanClass LoRaWAN;

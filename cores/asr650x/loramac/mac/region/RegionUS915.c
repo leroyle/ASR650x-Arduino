@@ -587,7 +587,7 @@ bool RegionUS915RxConfig( RxConfigParams_t* rxConfig, int8_t* datarate )
         maxPayload = MaxPayloadOfDatarateUS915[dr];
     }
     Radio.SetMaxPayloadLength( MODEM_LORA, maxPayload + LORA_MAC_FRMPAYLOAD_OVERHEAD );
-    FREQ_PRINTF("RX on freq %u Hz at DR %d\r\n", (unsigned int)frequency, dr);
+    FREQ_PRINTF("****** RX on freq %u Hz at DR %d\r\n", (unsigned int)frequency, dr);
 
     *datarate = (uint8_t) dr;
     return true;
@@ -607,7 +607,7 @@ bool RegionUS915TxConfig( TxConfigParams_t* txConfig, int8_t* txPower, TimerTime
 
     Radio.SetMaxPayloadLength( MODEM_LORA, txConfig->PktLen );
     Radio.SetTxConfig( MODEM_LORA, phyTxPower, 0, bandwidth, phyDr, 1, 8, false, true, 0, 0, false, 3e3 );
-    FREQ_PRINTF("TX on freq %u Hz at DR %d power %d dBm\r\n", (unsigned int)Channels[txConfig->Channel].Frequency, txConfig->Datarate,phyTxPower);
+    FREQ_PRINTF("****** TX on freq %u Hz at DR %d power %d dBm\r\n", (unsigned int)Channels[txConfig->Channel].Frequency, txConfig->Datarate,phyTxPower);
 
     *txTimeOnAir = Radio.TimeOnAir( MODEM_LORA,  txConfig->PktLen );
     *txPower = txPowerLimited;
