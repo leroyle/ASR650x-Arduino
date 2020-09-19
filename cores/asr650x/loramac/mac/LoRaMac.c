@@ -426,6 +426,11 @@ static MlmeConfirm_t MlmeConfirm;
 static LoRaMacRxSlot_t RxSlot;
 
 /*!
+ * Holds the current user data rate override, if there is one
+ */
+static UserOverrideDataRate = -1;
+
+/*!
  * LoRaMac tx/rx operation state
  */
 LoRaMacFlags_t LoRaMacFlags;
@@ -936,8 +941,14 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
                     IsLoRaMacNetworkJoined = true;
                     saveNetInfo(temp, size);
                 	//Joined save its DR using LoRaMacParams.ChannelsDatarate, if set it will be default
-                	LoRaMacParams.ChannelsDatarate = LoRaMacParamsDefaults.ChannelsDatarate;
-                	//printf("**** LoRaMacParams.ChannelsDatarate %d\r\n",LoRaMacParams.ChannelsDatarate);
+                	if (UserOverrideDataRate != (int8_t) -1)
+                    {
+                        MAC_PRINTF("**** Overriding default date rate with app level defined data rate: %d\r\n", UserOverrideDataRate);
+                        LoRaMacParams.ChannelsDatarate = UserOverrideDataRate;
+                    } else {
+                        LoRaMacParams.ChannelsDatarate = LoRaMacParamsDefaults.ChannelsDatarate;
+                    }
+                    //printf("**** LoRaMacParams.ChannelsDatarate %d\r\n",LoRaMacParams.ChannelsDatarate);
             	} else {
                     LoRaMacConfirmQueueSetStatus( LORAMAC_EVENT_INFO_STATUS_JOIN_FAIL, MLME_JOIN );
                 }
@@ -3149,13 +3160,13 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
     return LORAMAC_STATUS_OK;
 }
 
-LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo, int8_t userDefault_DR )
+LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
 {
     AdrNextParams_t adrNext;
     GetPhyParams_t getPhy;
     PhyParam_t phyParam;
     //int8_t datarate = LoRaMacParamsDefaults.ChannelsDatarate;
-    int8_t datarate = userDefault_DR;
+    int8_t datarate = LoRaMacParams.ChannelsDatarate;
     int8_t txPower = LoRaMacParamsDefaults.ChannelsTxPower;
     uint8_t fOptLen = MacCommandsBufferIndex + MacCommandsBufferToRepeatIndex;
 
@@ -3172,13 +3183,10 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo, i
     adrNext.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
 
     // We call the function for information purposes only. We don't want to
-    // apply the datarate, the tx power and the ADR ack counter.
-    int8_t tmpDatarate;
 
-    // we were overriding the datarate as set above
-    // RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter );
+
+    RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter );
     
-    RegionAdrNext( LoRaMacRegion, &adrNext, &tmpDatarate, &txPower, &AdrAckCounter );
 
     // Setup PHY request
     getPhy.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
@@ -3206,7 +3214,7 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo, i
 
     // Verify if the fOpts and the payload fit into the maximum payload
     if ( ValidatePayloadLength( size, datarate, fOptLen ) == false ) {
-        MAC_PRINTF("**** LoRaMacQueryTxPossible: Error: Packet length: %d - too large for data rate/spreading factor\r\n", size + fOptLen);
+        MAC_PRINTF("**** LoRaMacQueryTxPossible: Error: Packet length: %d - too large for data rate of DR_%d\r\n", size + fOptLen, datarate);
         return LORAMAC_STATUS_LENGTH_ERROR;
     }
     return LORAMAC_STATUS_OK;
@@ -4094,6 +4102,12 @@ void LoRaMacTestSetDutyCycleOn( bool enable )
 void LoRaMacTestSetChannel( uint8_t channel )
 {
     Channel = channel;
+}
+
+void LoRaMacSetUserOverrideDataRate( int8_t datarate )
+{
+    UserOverrideDataRate = datarate;
+    LoRaMacParams.ChannelsDatarate = datarate;
 }
 
 #if 0

@@ -2246,7 +2246,16 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
  *          In case the query is valid, and the LoRaMAC is able to send the frame,
  *          the function returns \ref LORAMAC_STATUS_OK.
  */
-LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo, int8_t userDefault_DR );
+LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo );
+
+/*!
+ * \brief   LoRaMAC App Level Data Rate Override
+ *
+ * \details Reset the data rate to that specified by the application
+ *
+ * \param   [IN] datarate - new data rate.
+ */
+void LoRaMacSetUserOverrideDataRate( int8_t datarate );
 
 /*!
  * \brief   LoRaMAC channel add service

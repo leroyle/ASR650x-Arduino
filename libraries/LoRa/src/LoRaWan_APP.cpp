@@ -101,7 +101,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
         LoRaMacStatus_t packetLenStatus;
 
         *sendStatus = LORAMAC_STATUS_OK;
-        packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo, default_DR );
+        packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo );
 
         if( packetLenStatus != LORAMAC_STATUS_OK )
 	{
@@ -678,6 +678,7 @@ void LoRaWanClass::sleep()
 void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 {
 	default_DR = dataRate;
+	LoRaMacSetUserOverrideDataRate(dataRate);
 }
 
 int8_t LoRaWanClass::getDataRateForNoADR()
