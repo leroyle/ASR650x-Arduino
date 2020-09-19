@@ -1,5 +1,12 @@
 
+
 # Sept 19, 2020
+### Problem:
+Last changes broke ADR data rate change as suggested by the network router
+#### fix:
+restore ability of network to influence data rate when ADR is enabled.
+
+# Sept 18, 2020
 
 ### Problem:
 Default data rate is fixed by a #define in the runtime
