@@ -12,6 +12,10 @@ PlatformioL Linux:  ~/.platformio/packages/framework-arduinoasrmicro650x
 
 We will periodically try to pull in any changes that Heltec commits, but no guarantees.
 
+
+Sept 19  Closed issues
+   - #8 Latest changes broke ADR resetting of DATA RATE
+
 Sept 18  Closed issues
    - #2  LoRaWAN gives user false illusion of transmit success if payload exceeds max for DR
    - #5  LoRaWan: LoRaMac.c - ValidatePayloadLength( ) fails to catch too large payload if fOptsLen != 0

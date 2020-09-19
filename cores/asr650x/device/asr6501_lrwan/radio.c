@@ -7,6 +7,7 @@
 #include "sx126x-board.h"
 #include "board.h"
 #include "utilities.h"
+#include "debug.h"
 
 /*!
  * \brief Initializes the radio
@@ -618,7 +619,7 @@ void RadioSetRxConfig( RadioModems_t modem, uint32_t bandwidth,
                          bool iqInverted, bool rxContinuous )
 {
 
-    printf("**** RadioSetRxConfig: Rx spreading factor: %d\r\n", datarate);
+    RADIO_PRINTF("**** RadioSetRxConfig: Rx spreading factor: %d\r\n", datarate);
 
     RxContinuous = rxContinuous;
 
@@ -729,7 +730,7 @@ void RadioSetTxConfig( RadioModems_t modem, int8_t power, uint32_t fdev,
                         uint8_t hopPeriod, bool iqInverted, uint32_t timeout )
 {
 
-    printf("**** RadioSetTxConfig: Tx spreading factor: %d\r\n", datarate);
+    RADIO_PRINTF("**** RadioSetTxConfig: Tx spreading factor: %d\r\n", datarate);
 
     switch( modem )
     {
@@ -889,13 +890,13 @@ void RadioSend( uint8_t *buffer, uint8_t size )
                            IRQ_RADIO_NONE,
                            IRQ_RADIO_NONE );
 
-    printf("**** RadioSend: spreading factor: %d\r\n", SX126x.ModulationParams.Params.LoRa.SpreadingFactor);
-    printf("**** RadioSend packet size: %d\r\n", size);
-    printf("**** Radio packet data\r\n\t");
+    RADIO_PRINTF("**** RadioSend: spreading factor: %d\r\n", SX126x.ModulationParams.Params.LoRa.SpreadingFactor);
+    RADIO_PRINTF("**** RadioSend packet size: %d\r\n", size);
+    RADIO_PRINTF("**** Radio packet data\r\n\t");
     for (uint8_t i = 0; i < size; i++) {
-        printf("0x%x ", buffer[i]);
+        RADIO_PRINTF("0x%x ", buffer[i]);
     }
-    printf("\r\n");
+    RADIO_PRINTF("\r\n");
 
 
     if( SX126xGetPacketType( ) == PACKET_TYPE_LORA )
@@ -1156,7 +1157,7 @@ void RadioIrqProcess( void )
 
         if( ( irqRegs & IRQ_TX_DONE ) == IRQ_TX_DONE )
         {
-            //printf("tx done\r\n");
+            //RADIO_PRINTF("tx done\r\n");
             TimerStop( &TxTimeoutTimer );
             SX126xSetOperatingMode(MODE_SLEEP);
             if( ( RadioEvents != NULL ) && ( RadioEvents->TxDone != NULL ) )
@@ -1167,7 +1168,7 @@ void RadioIrqProcess( void )
 
         if( ( irqRegs & IRQ_RX_DONE ) == IRQ_RX_DONE )
         {
-        	//printf("rx done\r\n");
+        	//RADIO_PRINTF("rx done\r\n");
             uint8_t size;
             TimerStop( &RxTimeoutTimer );
             SX126xGetPayload( RadioRxPayload, &size , 255 );

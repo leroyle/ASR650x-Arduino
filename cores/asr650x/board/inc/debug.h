@@ -95,11 +95,14 @@ extern "C" {
 	#define DBG_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define MAC_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define WAN_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
+	#define RADIO_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
+
 #elif LoRaWAN_DEBUG_LEVEL == 1 
 	#define PRINTF_RAW(format, ...)    printf(format, ##__VA_ARGS__)
 	#define DBG_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define MAC_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define WAN_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
+	#define RADIO_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define FREQ_PRINTF(format, ...)    printf(format, ##__VA_ARGS__)
 	#define DIO_PRINTF(format, ...)
 #else
@@ -107,6 +110,7 @@ extern "C" {
 	#define DIO_PRINTF(format, ...)		do {}while(0)
 	#define MAC_PRINTF(format, ...)		do {}while(0)
 	#define WAN_PRINTF(format, ...)		do {}while(0)
+	#define RADIO_PRINTF(format, ...)		do {}while(0)
 	#define DBG_PRINTF(format, ...)		do {}while(0)
 #endif
 
