@@ -1907,20 +1907,26 @@ static bool ValidatePayloadLength( uint8_t lenN, int8_t datarate, uint8_t fOptsL
 
     // Validation of the application payload size
     // Sept 15, 2020
-    // The Heltec way: when a user packet plus MAC command reponse 
-    // exceeded the max payload length as defined by the datarate, the user
-    // packet was sent anyway. Sounds like a violation.
+    // The Heltec way: when a user packet plus MAC command reponse exceeded the max
+    // payload length as defined by the datarate, the user packet was
+    // sent anyway. Sounds like a violation.
+    // However, in the interests of preserving the user data and the
+    // fact that these MAC responses should be very infrequent we will
+    // technically allow the spec to be violated. This does assume it
+    // occurs infrequently.
     // the Heltec calc: 
-        //if ( ((( payloadSize > maxN ) && (fOptsLen != 0) && (fOptsLen <= maxN)) || ( payloadSize <= maxN )) && ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
-        //    return true;
-        // }
     
-    // let use the SemTech calc instead Sept 15, 2020
-    // https://github.com/Lora-net/LoRaMac-node/blob/master/src/mac/LoRaMac.c
-    if ( ( payloadSize < maxN ) &&  ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
+    if ( ((( payloadSize > maxN ) && (fOptsLen != 0) && (fOptsLen <= maxN)) || ( payloadSize <= maxN )) && ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
         return true;
     }
     return false;
+
+    // This is the SemTech reference implementation calc Sept 23, 2020
+    // // https://github.com/Lora-net/LoRaMac-node/blob/master/src/mac/LoRaMac.c
+    // if ( (( payloadSize <= maxN ) || ( (payloadSize > maxN) && (fOptsLen != 0) )) && ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
+    //     return true;
+    // }
+    // return false;
 }
 
 static bool IsStickyMacCommandPending( void )
