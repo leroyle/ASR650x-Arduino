@@ -2255,7 +2255,7 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo );
  *
  * \param   [IN] datarate - new data rate.
  */
-void LoRaMacSetUserOverrideDataRate( int8_t datarate );
+void LoRaMacSetDataRate( int8_t datarate );
 
 /*!
  * \brief   Get the current Data Rate 

@@ -4109,7 +4109,7 @@ void LoRaMacTestSetChannel( uint8_t channel )
     Channel = channel;
 }
 
-void LoRaMacSetUserOverrideDataRate( int8_t datarate )
+void LoRaMacSetDataRate( int8_t datarate )
 {
     // used to set the data rate override just after a 
     // join accept, otherwise DR used during join accept is 

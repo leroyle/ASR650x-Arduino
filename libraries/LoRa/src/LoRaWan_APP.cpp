@@ -690,7 +690,7 @@ void LoRaWanClass::sleep()
 }
 void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 {
-	LoRaMacSetUserOverrideDataRate(dataRate);
+	LoRaMacSetDataRate(dataRate);
 }
 
 /**
