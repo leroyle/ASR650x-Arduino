@@ -2258,6 +2258,19 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo );
 void LoRaMacSetUserOverrideDataRate( int8_t datarate );
 
 /*!
+ * \brief   Get the current Data Rate 
+ *
+ * \details Return the value of the current data rate
+ *
+ * \param   [IN] dataRate - storage space for the data rate value.
+ * 
+ * \retval  LoRaMacStatus_t Status of the operation. Possible returns are:
+ *          \ref LORAMAC_STATUS_OK,
+ *          \ref LORAMAC_STATUS_DATARATE_INVALID.
+ */
+LoRaMacStatus_t LoRaMacGetDataRate(int8_t *dataRate);
+
+/*!
  * \brief   LoRaMAC channel add service
  *
  * \details Adds a new channel to the channel list and activates the id in

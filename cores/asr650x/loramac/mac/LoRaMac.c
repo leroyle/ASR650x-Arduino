@@ -940,7 +940,9 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
                     LoRaMacConfirmQueueSetStatus( LORAMAC_EVENT_INFO_STATUS_OK, MLME_JOIN );
                     IsLoRaMacNetworkJoined = true;
                     saveNetInfo(temp, size);
-                	//Joined save its DR using LoRaMacParams.ChannelsDatarate, if set it will be default
+                
+                	//Joined save the app defined override DR using LoRaMacParams.ChannelsDatarate, if override 
+                    // is not set use default
                 	if (UserOverrideDataRate != (int8_t) -1)
                     {
                         MAC_PRINTF("**** Overriding default date rate with app level defined data rate: %d\r\n", UserOverrideDataRate);
@@ -2767,6 +2769,7 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
                         LoRaMacBuffer[0x05] = fCtrl->Value;
                         for ( i = 0; i < MacCommandsBufferIndex; i++ ) {
                             LoRaMacBuffer[pktHeaderLen++] = MacCommandsBuffer[i];
+                        }
 
                         MAC_PRINTF("**** Copied response to LoRaMacBuffer: FOptsLen: %d \r\n", fCtrl->Bits.FOptsLen);
                         MAC_PRINTF("**** buffer content: \r\n\t");
@@ -2774,7 +2777,7 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
                             MAC_PRINTF("0x%x ", ((uint8_t *) LoRaMacBuffer)[i]);
                         }
                         MAC_PRINTF("\r\n");
-                        }
+                       
                     } else {
                         // commands do not fit in LoRaMacBuffer, put them in user buffer.
                         // they will be encrypted 
@@ -2821,11 +2824,11 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
                     LoRaMacTxPayloadLen = LORAMAC_PHY_MAXPAYLOAD - 4 - pktHeaderLen;
                 }
 
-                    MAC_PRINTF("**** payload before encryption\r\n\t");
-                    for (uint8_t i = 0; i < LoRaMacTxPayloadLen; i++) {
-                        MAC_PRINTF("0x%x ", ((uint8_t *) payload)[i]);
-                     }
-                      MAC_PRINTF("\r\n");
+                MAC_PRINTF("**** payload before encryption\r\n\t");
+                for (uint8_t i = 0; i < LoRaMacTxPayloadLen; i++) {
+                    MAC_PRINTF("0x%x ", ((uint8_t *) payload)[i]);
+                    }
+                MAC_PRINTF("\r\n");
 
                 if ( framePort == 0 ) {
                     // NOTE: Incorrect: -> Reset buffer index as the mac commands are being sent on port 0
@@ -3166,8 +3169,10 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
     GetPhyParams_t getPhy;
     PhyParam_t phyParam;
     //int8_t datarate = LoRaMacParamsDefaults.ChannelsDatarate;
+    //int8_t txPower = LoRaMacParamsDefaults.ChannelsTxPower;
     int8_t datarate = LoRaMacParams.ChannelsDatarate;
-    int8_t txPower = LoRaMacParamsDefaults.ChannelsTxPower;
+    int8_t txPower = LoRaMacParams.ChannelsTxPower;
+
     uint8_t fOptLen = MacCommandsBufferIndex + MacCommandsBufferToRepeatIndex;
 
     if ( txInfo == NULL ) {
@@ -4106,8 +4111,42 @@ void LoRaMacTestSetChannel( uint8_t channel )
 
 void LoRaMacSetUserOverrideDataRate( int8_t datarate )
 {
+    // used to set the data rate override just after a 
+    // join accept, otherwise DR used during join accept is 
+    // used
     UserOverrideDataRate = datarate;
-    LoRaMacParams.ChannelsDatarate = datarate;
+    //LoRaMacParams.ChannelsDatarate = datarate;
+
+    // this will set the data rate into the LoRaMacParams.ChannelsDatarate
+    // provided datarate is valid for current region
+    MibRequestConfirm_t mibReq;
+	mibReq.Type = MIB_CHANNELS_DATARATE;
+	mibReq.Param.ChannelsDatarate = datarate;
+
+	LoRaMacStatus_t status  = LoRaMacMibSetRequestConfirm( &mibReq );
+	if( status == LORAMAC_STATUS_OK )
+	//if( LoRaMacMibSetRequestConfirm( &mibReq ) == LORAMAC_STATUS_OK )
+	{
+		printf("Data rate changed\r\n");
+	} else {
+		printf("Data rate change failed: %d\r\n", status);
+	}
+}
+
+LoRaMacStatus_t LoRaMacGetDataRate(int8_t *dataRate)
+{
+    MibRequestConfirm_t mibReq;
+	mibReq.Type = MIB_CHANNELS_DATARATE;
+
+	LoRaMacStatus_t status  = LoRaMacMibGetRequestConfirm( &mibReq );
+    if (status == LORAMAC_STATUS_OK)
+    {
+        *dataRate =  mibReq.Param.ChannelsDatarate;
+        return LORAMAC_STATUS_OK;
+    }
+    else {
+        LORAMAC_STATUS_DATARATE_INVALID;
+    }
 }
 
 #if 0

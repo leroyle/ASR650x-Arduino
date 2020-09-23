@@ -94,11 +94,24 @@ enum eDeviceState_LoraWan deviceState;
 bool SendFrame( LoRaMacStatus_t * sendStatus)
 {
 	lwan_dev_params_update();
+	int8_t currentDataRate;
 	
 	McpsReq_t mcpsReq;
 	LoRaMacTxInfo_t txInfo;
 	LoRaMacStatus_t macStatus = LORAMAC_STATUS_OK;
         LoRaMacStatus_t packetLenStatus;
+
+	// make sure we have the latest data rate. Could be
+	// changed at the app level or via ADR, if error use default
+	MibRequestConfirm_t mibReq;
+	mibReq.Type = MIB_CHANNELS_DATARATE;
+	if( LoRaMacMibGetRequestConfirm( &mibReq ) == LORAMAC_STATUS_OK )
+	{
+		currentDataRate=mibReq.Param.ChannelsDatarate;
+  	} else {
+		currentDataRate = default_DR;
+	}
+	 
 
         *sendStatus = LORAMAC_STATUS_OK;
         packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo );
@@ -109,7 +122,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 		mcpsReq.Type = MCPS_UNCONFIRMED;
 		mcpsReq.Req.Unconfirmed.fBuffer = NULL;
 		mcpsReq.Req.Unconfirmed.fBufferSize = 0;
-		mcpsReq.Req.Unconfirmed.Datarate = default_DR;
+		mcpsReq.Req.Unconfirmed.Datarate = currentDataRate;
 	}
 	else
 	{
@@ -120,7 +133,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 			mcpsReq.Req.Unconfirmed.fPort = appPort;
 			mcpsReq.Req.Unconfirmed.fBuffer = appData;
 			mcpsReq.Req.Unconfirmed.fBufferSize = appDataSize;
-			mcpsReq.Req.Unconfirmed.Datarate = default_DR;
+			mcpsReq.Req.Unconfirmed.Datarate = currentDataRate;
 		}
 		else
 		{
@@ -130,7 +143,7 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 			mcpsReq.Req.Confirmed.fBuffer = appData;
 			mcpsReq.Req.Confirmed.fBufferSize = appDataSize;
 			mcpsReq.Req.Confirmed.NbTrials = confirmedNbTrials;
-			mcpsReq.Req.Confirmed.Datarate = default_DR;
+			mcpsReq.Req.Confirmed.Datarate = currentDataRate;
 		}
 	}
 
@@ -677,13 +690,22 @@ void LoRaWanClass::sleep()
 }
 void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 {
-	default_DR = dataRate;
 	LoRaMacSetUserOverrideDataRate(dataRate);
 }
 
+/**
+ * Returns data rate or -1 if the call fails
+*/
 int8_t LoRaWanClass::getDataRateForNoADR()
 {
-	return default_DR;
+	
+	int8_t dataRate = -1;
+	if (LoRaMacGetDataRate(&dataRate) == LORAMAC_STATUS_OK)
+	{ 
+		return dataRate;
+	}
+
+	return -1;
 }
 
 void LoRaWanClass::ifskipjoin()
