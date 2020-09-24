@@ -12,6 +12,8 @@ PlatformioL Linux:  ~/.platformio/packages/framework-arduinoasrmicro650x
 
 We will periodically try to pull in any changes that Heltec commits, but no guarantees.
 
+Sept 24 closed issue, added Helium Cubecell AB02 sample
+  - #10 Network specfied Adaptive Data Rate changes were not being honored as expected
 
 Sept 19  Closed issues
    - #8 Latest changes broke ADR resetting of DATA RATE

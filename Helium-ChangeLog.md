@@ -1,5 +1,12 @@
 
+# sept 24, 2020
 
+### Problem:
+
+Added a platformio sample that uses the set/get API for data rate and transmit power and  send result status
+### Problem:
+Network specified Adaptive Data Rate changes were not being applied as expected
+#### reworked a bit of the ADR handling 
 # Sept 19, 2020
 ### Problem:
 Last changes broke ADR data rate change as suggested by the network router
