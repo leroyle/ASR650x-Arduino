@@ -3168,7 +3168,8 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
 
     return LORAMAC_STATUS_OK;
 }
-extern uint16_t sendCount;
+
+// extern uint16_t sendCount;
 LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
 {
     AdrNextParams_t adrNext;
@@ -3185,10 +3186,10 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
         return LORAMAC_STATUS_PARAMETER_INVALID;
     }
 
-    if(  (sendCount == 4) || (sendCount == 8) || (sendCount == 13) )
-    {
-        AdrAckCounter = 96;
-    } 
+    // DEBUG if(  (sendCount == 4) || (sendCount == 8) || (sendCount == 13) )
+    // {
+    //     AdrAckCounter = 96;
+    // } 
 
     // Setup ADR request
     adrNext.UpdateChanMask = false;
@@ -3209,7 +3210,6 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
     // apply the datarate, the tx power and the ADR ack counter.
 
     RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter, true );
-    
     // Setup PHY request
     getPhy.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
     getPhy.Datarate = datarate;
