@@ -4144,9 +4144,9 @@ void LoRaMacSetDataRate( int8_t datarate )
 	if( status == LORAMAC_STATUS_OK )
 	//if( LoRaMacMibSetRequestConfirm( &mibReq ) == LORAMAC_STATUS_OK )
 	{
-		printf("Data rate changed\r\n");
+		MAC_PRINTF("** Data rate changed\r\n");
 	} else {
-		printf("Data rate change failed: %d\r\n", status);
+		MAC_PRINTF("** Data rate change failed: %d\r\n", status);
 	}
 }
 
