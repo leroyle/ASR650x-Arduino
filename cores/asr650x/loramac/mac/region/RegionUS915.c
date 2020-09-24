@@ -466,7 +466,7 @@ bool RegionUS915ChanMaskSet( ChanMaskSetParams_t* chanMaskSet )
     return true;
 }
 
-bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowOut, uint32_t* adrAckCounter )
+bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowOut, uint32_t* adrAckCounter, bool infoOnly)
 {
     bool adrAckReq = false;
     int8_t datarate = adrNext->Datarate;
@@ -476,6 +476,7 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
 
     // Report back the adr ack counter
     *adrAckCounter = adrNext->AdrAckCounter;
+    // printf("$$$$ adrAckCounter: %d\r\n", *adrAckCounter);
 
     if( adrNext->AdrEnabled == true )
     {
@@ -486,8 +487,9 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
         }
         else
         {
-            if( adrNext->AdrAckCounter >= US915_ADR_ACK_LIMIT )
+            if( (adrNext->AdrAckCounter >= US915_ADR_ACK_LIMIT) && (infoOnly == false) )
             {
+                // printf("Adr Ack Limit exceeded, reset txPower to max\r\n");
                 adrAckReq = true;
                 txPower = US915_MAX_TX_POWER;
             }
@@ -500,13 +502,19 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
                 if( ( adrNext->AdrAckCounter % US915_ADR_ACK_DELAY ) == 1 )
                 {
                     // Decrease the datarate
+                    // printf("$$$$$  Decrease the datarate\r\n");
                     getPhy.Attribute = PHY_NEXT_LOWER_TX_DR;
                     getPhy.Datarate = datarate;
                     getPhy.UplinkDwellTime = adrNext->UplinkDwellTime;
                     phyParam = RegionUS915GetPhyParam( &getPhy );
                     datarate = phyParam.Value;
 
-                    if( datarate == US915_TX_MIN_DATARATE )
+                    // for // DEBUG if(infoOnly == false)
+                    // {
+                    //     *adrAckCounter = 96;
+                    // }
+
+                    if( (datarate == US915_TX_MIN_DATARATE) && (infoOnly == false))
                     {
                         // We must set adrAckReq to false as soon as we reach the lowest datarate
                         adrAckReq = false;
@@ -528,6 +536,7 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
 
     *drOut = datarate;
     *txPowOut = txPower;
+    // printf("RegionUS915AdrNext: return datarate: %d, txPower: %d\r\n", datarate, txPower);
     return adrAckReq;
 }
 

@@ -1413,7 +1413,7 @@ bool RegionChanMaskSet( LoRaMacRegion_t region, ChanMaskSetParams_t *chanMaskSet
  * \retval Returns true, if an ADR request should be performed.
  */
 bool RegionAdrNext( LoRaMacRegion_t region, AdrNextParams_t *adrNext, int8_t *drOut, int8_t *txPowOut,
-                    uint32_t *adrAckCounter );
+                    uint32_t *adrAckCounter, bool infoOnly );
 
 /*!
  * \brief Configuration of the RX windows.

@@ -2740,7 +2740,7 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
             adrNext.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
 
             fCtrl->Bits.AdrAckReq = RegionAdrNext( LoRaMacRegion, &adrNext,
-                                                   &LoRaMacParams.ChannelsDatarate, &LoRaMacParams.ChannelsTxPower, &AdrAckCounter );
+                                                   &LoRaMacParams.ChannelsDatarate, &LoRaMacParams.ChannelsTxPower, &AdrAckCounter, false );
 
             if ( SrvAckRequested == true ) {
                 SrvAckRequested = false;
@@ -3168,7 +3168,7 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
 
     return LORAMAC_STATUS_OK;
 }
-
+extern uint16_t sendCount;
 LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
 {
     AdrNextParams_t adrNext;
@@ -3185,6 +3185,11 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
         return LORAMAC_STATUS_PARAMETER_INVALID;
     }
 
+    if(  (sendCount == 4) || (sendCount == 8) || (sendCount == 13) )
+    {
+        AdrAckCounter = 96;
+    } 
+
     // Setup ADR request
     adrNext.UpdateChanMask = false;
     adrNext.AdrEnabled = AdrCtrlOn;
@@ -3193,12 +3198,18 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
     adrNext.TxPower = LoRaMacParams.ChannelsTxPower;
     adrNext.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
 
+    // Problem with this RegionAdrNext() call:
+    // this call is negating the decrease in data rate if ArdAckCounter is too large
+    // the call reset the DR and the Ack count but the DR is not stored back into LoRaMacParams,
+    // thus when the call to RegionAdrNext in PrepareFrame() is called 
+    // the ADR count has already been reset, this that call does not change the DR
+    // Does this work in the base ??
+
     // We call the function for information purposes only. We don't want to
+    // apply the datarate, the tx power and the ADR ack counter.
 
-
-    RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter );
+    RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter, true );
     
-
     // Setup PHY request
     getPhy.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
     getPhy.Datarate = datarate;
