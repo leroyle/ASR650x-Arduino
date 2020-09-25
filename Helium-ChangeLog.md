@@ -1,4 +1,40 @@
+# sept 24, 2020
+## FAQ:
 
+- With my CubeCell I see the "joining", "joined", and a single "unconfirmed uplink sent" and then nothing:
+  - This message is actually dumped before final packet length validation is performed. So, if the packet is too large for the defined data rate it may not be sent. Check to make sure the default data rate is correct for your region and that the maximum packet size for that data rate is not being exceeded by any transmits from your application.
+
+- I see "uplink sent" messages on the serial port output but nothing shows up within the Helium console.
+  - There is some sort of failure being detected within the send logic. Unfortunatly the Cubecell runtime send() API does not return error status to the app layer and does not dump any error message to the serial output.  Use a version of the runtime that supports returning send result status back up to the app layer. Add error checking/handling to the appp layer.
+
+- With the latest version of the runtime my device never "joins" the network.
+  - Check the preamble size in the RegionUS915.c file. 
+    - Look for Radio.SetTxConfig(). The 7th parameter should be 8, not 14 or 16.
+
+- How do I set data rate or transmit power from within my device application
+  - refer to the top level HeliumExamples directory within this repository where you will find a sample application that demonstrates both API's. 
+  - Be sure these are set "after" the call to LoRaWAN.init(). 
+  - Pay attention to the note about setting transmit power level.
+      
+- I set my custom data rate and transmit power after the LoRaWAN.init() call but my transmit power is getting reset back to TX_POWER_0 (0).
+  - Sometime after the first uplink is received by the network the network returns a LinkADRReq MAC command to the device. The purpose is to suggest to the app the proper channel selection mask, the data rate, and transmission power level for optimal netowork connection.
+    - The channel selection mask is defined by the network operator and should be used.
+    - The data rate is a mirrored back value from what was detected by the network from the inital uplink message. So it should be equal to what was set for the uplink message.
+    - For transmission power the network has no knowlege of what the device used for uplink so it default to max power, TX_POWER_0 which is a value of 0.
+  Thus if you override the transmit power it must be after the LinkADRReq MAC command is processed which may be after one or two uplink messages. 
+  - The network will continue to send the LinkADRReq command until it receives a response from the device application, thus there is not a hard fast rule as to when the runtime processes the message.
+
+- Why do I see my device transmitting empty packets.
+    - The default runtime has a bug which allows zero byte packets to be sent if your packet size is larger than allowed for the current data rate setting. Trying increasing your data rate.
+
+- Why do I see occasional payloads being sent to the network that are larger than my user packet data. Sometimes the payload size appears to exceed the maximum for the defined data rate. I thought the runtime would refuse to send packets that exceed the data rate maximum>
+  - the oversize check is temporarily suspended if a MAC response is being returned to the network.
+    - The network communicates house keeping messages with the end node device using MAC commands. Generally these are not exposed to the application API, rather are stripped out/added by the lower level runtimes. These are generally very infrequent and small in size. These downlink commands/requests are sent to the device during one of the normal device receive windows. The responses are packaged back up into the return payload. If your data rate setting maximum payload size limit and payload  actual length are very close adding the MAC responses may cause the overall length to exceed the data rate maximum specification. In this case a design decision was made to ignore the oversize length and send the packet anyway. The assumption here is that this occurance is very limited and the oversize difference is a byte or two. 
+
+
+
+
+# This Repository Changes 
 # sept 24, 2020
 
 ### Problem:
