@@ -1,0 +1,15 @@
+{
+  "name": "framework-arduinoasrmicro650x",
+  "version": "1.1.0",
+  "description": "Arduino Wiring-based Framework for ASR Microelectronics ASR650x (Heltec core)",
+  "keywords": [
+    "framework",
+    "arduino",
+    "asr microelectronics",
+    "asr605x"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HelTecAutomation/ASR650x-Arduino"
+  }
+}
