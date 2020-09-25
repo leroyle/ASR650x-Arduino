@@ -152,11 +152,6 @@ void LoRaMacPayloadEncrypt( const uint8_t *buffer, uint16_t size, const uint8_t 
             encBuffer[bufferIndex + i] = buffer[bufferIndex + i] ^ sBlock[i];
         }
     }
-    // printf("**** LoRaMacPayloadEncrypt  packet data, post encrypted data. size: %d\r\n\t", size);
-    // for (uint8_t i = 0; i < size; i++) {
-    //     printf("0x%x ", ((uint8_t *) encBuffer)[i]);
-    // }
-    // printf("\r\n");
 }
 
 void LoRaMacPayloadDecrypt( const uint8_t *buffer, uint16_t size, const uint8_t *key, uint32_t address, uint8_t dir, uint32_t sequenceCounter, uint8_t *decBuffer )

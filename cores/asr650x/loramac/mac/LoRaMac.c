@@ -704,7 +704,7 @@ static void OpenContinuousRx2Window( void );
 
 static void OnRadioTxDone( void )
 {
-	DIO_PRINTF("**** Event : Tx Done\r\n");
+	DIO_PRINTF("Event : Tx Done\r\n");
     GetPhyParams_t getPhy;
     PhyParam_t phyParam;
     SetBandTxDoneParams_t txDone;
@@ -770,7 +770,7 @@ static void OnRadioTxDone( void )
     }
 #ifdef CONFIG_LORA_VERIFY
     if (g_lora_debug) {
-        PRINTF_RAW("**** The trasaction consume %llu time(ms)\r\n", curTime - mcps_start_time);
+        PRINTF_RAW("The trasaction consume %llu time(ms)\r\n", curTime - mcps_start_time);
     }
 #endif
 #ifdef CONFIG_LWAN
@@ -801,7 +801,7 @@ static void PrepareRxDoneAbort( void )
 
 void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
-	DIO_PRINTF("**** Event : Rx Done\r\n");
+	DIO_PRINTF("Event : Rx Done\r\n");
 	uint8_t * temp = payload;
     LoRaMacHeader_t macHdr;
     LoRaMacFrameCtrl_t fCtrl;
@@ -860,7 +860,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
         MlmeIndication.BeaconInfo.Rssi = rssi;
         MlmeIndication.BeaconInfo.Snr = snr;
 #ifdef LORAMAC_CLASSB_TESTCASE
-        DBG_PRINTF("**** receive beacon\r\n");
+        DBG_PRINTF("receive beacon\r\n");
 #endif
         return;
     }
@@ -926,7 +926,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
                     LoRaMacParams.ReceiveDelay2 = LoRaMacParams.ReceiveDelay1 + 1000;
 #ifdef CONFIG_LORA_VERIFY
                 	if (g_lora_debug) {
-                    	PRINTF_RAW("**** Rx1DrOffset:%u Rx2Channel.Datarate:%u ReceiveDelay1:%u\r\n",
+                    	PRINTF_RAW("Rx1DrOffset:%u Rx2Channel.Datarate:%u ReceiveDelay1:%u\r\n",
                             	LoRaMacParams.Rx1DrOffset, LoRaMacParams.Rx2Channel.Datarate, (unsigned int)LoRaMacParams.ReceiveDelay1);
                 	}
 #endif
@@ -950,7 +950,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
                     } else {
                         LoRaMacParams.ChannelsDatarate = LoRaMacParamsDefaults.ChannelsDatarate;
                     }
-                    //printf("**** LoRaMacParams.ChannelsDatarate %d\r\n",LoRaMacParams.ChannelsDatarate);
+                    //printf("LoRaMacParams.ChannelsDatarate %d\r\n",LoRaMacParams.ChannelsDatarate);
             	} else {
                     LoRaMacConfirmQueueSetStatus( LORAMAC_EVENT_INFO_STATUS_JOIN_FAIL, MLME_JOIN );
                 }
@@ -1150,7 +1150,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
                             McpsIndication.AckReceived = false;
                             #ifdef CONFIG_LORA_VERIFY
                             if (g_lora_debug)
-                                PRINTF_RAW("**** CMD exist at FRMpayload and Fopts, ignore it\r\n");
+                                PRINTF_RAW("CMD exist at FRMpayload and Fopts, ignore it\r\n");
                             #endif
                         }
                     } else {
@@ -1184,7 +1184,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
             } else {
 #ifdef CONFIG_LORA_VERIFY
                 if (g_lora_debug) {
-                    PRINTF_RAW("**** MIC verify failed ignore the frame\r\n");
+                    PRINTF_RAW("MIC verify failed ignore the frame\r\n");
                 }
 #endif
                 McpsIndication.Status = LORAMAC_EVENT_INFO_STATUS_MIC_FAIL;
@@ -1208,7 +1208,7 @@ void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
         default:
 #ifdef CONFIG_LORA_VERIFY
             if (g_lora_debug)
-                PRINTF_RAW("**** Download frame %d being received but not process it\r\n", macHdr.Bits.MType);
+                PRINTF_RAW("Download frame %d being received but not process it\r\n", macHdr.Bits.MType);
 #endif
             McpsIndication.Status = LORAMAC_EVENT_INFO_STATUS_ERROR;
             PrepareRxDoneAbort( );
@@ -1231,7 +1231,7 @@ static void OnRadioTxTimeout( void )
 #if (LoraWan_RGB==1)
     turnOffRGB();
 #endif
-    DIO_PRINTF("**** Event : Tx Timeout\r\n");
+    DIO_PRINTF("Event : Tx Timeout\r\n");
 
     if( LoRaMacDeviceClass != CLASS_C )
     {
@@ -1252,7 +1252,7 @@ static void OnRadioTxTimeout( void )
 
 static void OnRadioRxError( void )
 {
-	DIO_PRINTF("**** Event : Rx Error\r\n");
+	DIO_PRINTF("Event : Rx Error\r\n");
     bool classBRx = false;
 
     if( LoRaMacDeviceClass != CLASS_C )
@@ -1327,7 +1327,7 @@ static void OnRadioRxTimeout( void )
 #if (LoraWan_RGB==1)
 	turnOffRGB();
 #endif
-    DIO_PRINTF("**** Event : Rx Timeout\r\n");
+    DIO_PRINTF("Event : Rx Timeout\r\n");
 
     bool classBRx = false;
 
@@ -1468,7 +1468,7 @@ static void OnMacStateCheckTimerEvent( void )
                         UpLinkCounter = 0;
                         #ifdef CONFIG_LORA_VERIFY
                         if (g_lora_debug)
-                            PRINTF_RAW("**** Join done, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
+                            PRINTF_RAW("Join done, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
                         #endif
                         ChannelsNbRepCounter = 0;
                         LoRaMacState &= ~LORAMAC_TX_RUNNING;
@@ -1498,7 +1498,7 @@ static void OnMacStateCheckTimerEvent( void )
                             //SaveUpCnt();
                             #ifdef CONFIG_LORA_VERIFY
                             if (g_lora_debug)
-                                PRINTF_RAW("**** Unconfirmed data, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
+                                PRINTF_RAW("Unconfirmed data, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
                             #endif
                         }
 
@@ -1522,7 +1522,7 @@ static void OnMacStateCheckTimerEvent( void )
                     //SaveUpCnt();
                 #ifdef CONFIG_LORA_VERIFY
                 if (g_lora_debug)
-                    PRINTF_RAW("**** Confirmed data received ACK, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
+                    PRINTF_RAW("Confirmed data received ACK, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
                 #endif
                 }
                 McpsConfirm.NbRetries = AckTimeoutRetriesCounter;
@@ -1568,7 +1568,7 @@ static void OnMacStateCheckTimerEvent( void )
                         //SaveUpCnt();
                         #ifdef CONFIG_LORA_VERIFY
                         if (g_lora_debug)
-                            PRINTF_RAW("**** Confirmed data can't send after decrease DR, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
+                            PRINTF_RAW("Confirmed data can't send after decrease DR, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
                         #endif
                     }
                 }
@@ -1585,7 +1585,7 @@ static void OnMacStateCheckTimerEvent( void )
                     UpLinkCounter++;
                     #ifdef CONFIG_LORA_VERIFY
                     if (g_lora_debug)
-                        PRINTF_RAW("**** Confirmed data exceed retry times, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
+                        PRINTF_RAW("Confirmed data exceed retry times, UpLinkCounter:%u\r\n", (unsigned int)UpLinkCounter);
                     #endif
                 }
             }
@@ -1724,7 +1724,7 @@ static void OnRxWindow1TimerEvent( void )
     }
 	
     RegionRxConfig( LoRaMacRegion, &RxWindow1Config, ( int8_t * )&McpsIndication.RxDatarate );
-    //printf("**** w1 dr:%d\r\n",McpsIndication.RxDatarate);
+    //printf("w1 dr:%d\r\n",McpsIndication.RxDatarate);
     RxWindowSetup( RxWindow1Config.RxContinuous, LoRaMacParams.MaxRxWindow );
 #if(LoraWan_RGB==1)
     turnOnRGB(COLOR_RXWINDOW1,0);
@@ -1748,7 +1748,7 @@ static void OnRxWindow2TimerEvent( void )
     }
 
     if ( RegionRxConfig( LoRaMacRegion, &RxWindow2Config, ( int8_t * )&McpsIndication.RxDatarate ) == true ) {
-    	//printf("**** w2 dr:%d\r\n",McpsIndication.RxDatarate);
+    	//printf("w2 dr:%d\r\n",McpsIndication.RxDatarate);
         RxWindowSetup( RxWindow2Config.RxContinuous, LoRaMacParams.MaxRxWindow );
         RxSlot = RX_SLOT_WIN_2;
     }
@@ -1903,30 +1903,11 @@ static bool ValidatePayloadLength( uint8_t lenN, int8_t datarate, uint8_t fOptsL
     // Calculate the resulting payload size
     payloadSize = ( lenN + fOptsLen );
 
-    //MAC_PRINTF("**** ValidatePayloadLength() payloadSize: %d, maxN: %d, fOptsLen: %d \r\n", payloadSize, maxN, fOptsLen);
-
     // Validation of the application payload size
-    // Sept 15, 2020
-    // The Heltec way: when a user packet plus MAC command reponse exceeded the max
-    // payload length as defined by the datarate, the user packet was
-    // sent anyway. Sounds like a violation.
-    // However, in the interests of preserving the user data and the
-    // fact that these MAC responses should be very infrequent we will
-    // technically allow the spec to be violated. This does assume it
-    // occurs infrequently.
-    // the Heltec calc: 
-    
     if ( ((( payloadSize > maxN ) && (fOptsLen != 0) && (fOptsLen <= maxN)) || ( payloadSize <= maxN )) && ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
         return true;
     }
     return false;
-
-    // This is the SemTech reference implementation calc Sept 23, 2020
-    // // https://github.com/Lora-net/LoRaMac-node/blob/master/src/mac/LoRaMac.c
-    // if ( (( payloadSize <= maxN ) || ( (payloadSize > maxN) && (fOptsLen != 0) )) && ( payloadSize <= LORAMAC_PHY_MAXPAYLOAD ) ) {
-    //     return true;
-    // }
-    // return false;
 }
 
 static bool IsStickyMacCommandPending( void )
@@ -1994,7 +1975,7 @@ static LoRaMacStatus_t AddMacCommand( uint8_t cmd, uint8_t p1, uint8_t p2 )
                 SetMlmeScheduleUplinkIndication( );
                 status = LORAMAC_STATUS_OK;
 #ifdef LORAMAC_CLASSB_TESTCASE
-                DBG_PRINTF("**** ready to send MOTE_MAC_DEV_STATUS_ANS p1=%d p2=%d\r\n",p1,p2);
+                DBG_PRINTF("ready to send MOTE_MAC_DEV_STATUS_ANS p1=%d p2=%d\r\n",p1,p2);
 #endif
             }
             break;
@@ -2040,7 +2021,7 @@ static LoRaMacStatus_t AddMacCommand( uint8_t cmd, uint8_t p1, uint8_t p2 )
                 // No payload for this answer
                status = LORAMAC_STATUS_OK;
 #ifdef LORAMAC_CLASSB_TESTCASE
-                DBG_PRINTF("**** ready to send MOTE_MAC_DEVICE_TIME_REQ\r\n");
+                DBG_PRINTF("ready to send MOTE_MAC_DEVICE_TIME_REQ\r\n");
 #endif
             }
             break;
@@ -2052,7 +2033,7 @@ static LoRaMacStatus_t AddMacCommand( uint8_t cmd, uint8_t p1, uint8_t p2 )
                 MacCommandsBuffer[MacCommandsBufferIndex++] = p1;
                 status = LORAMAC_STATUS_OK;
 #ifdef LORAMAC_CLASSB_TESTCASE
-                DBG_PRINTF("**** ready to send MOTE_MAC_PING_SLOT_INFO_REQ value=%d\r\n",p1);
+                DBG_PRINTF("ready to send MOTE_MAC_PING_SLOT_INFO_REQ value=%d\r\n",p1);
 #endif
             }
             break;
@@ -2153,7 +2134,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
         // Decode Frame MAC commands
 #ifdef CONFIG_LORA_VERIFY
         if (g_lora_debug) {
-            PRINTF_RAW("**** MacCommands:%d being processed\r\n", payload[macIndex]);
+            PRINTF_RAW("MacCommands:%d being processed\r\n", payload[macIndex]);
         }
 #endif
         switch ( payload[macIndex++] ) {
@@ -2166,12 +2147,11 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
 #ifdef CONFIG_LWAN                    
                     McpsIndication.LinkCheckAnsReceived = true;
 #endif    
-                	DBG_PRINTF("**** margin %d, gateways %d\r\n", MlmeConfirm.DemodMargin, MlmeConfirm.NbGateways);
+                	DBG_PRINTF("margin %d, gateways %d\r\n", MlmeConfirm.DemodMargin, MlmeConfirm.NbGateways);
                 }
                 break;
             case SRV_MAC_LINK_ADR_REQ: {
-                MAC_PRINTF("**** Processing Mac Command: SRV_MAC_LINK_ADR_REQ\r\n");
-               
+                //printf("Processing LINK ADR REQ\r\n");
                 LinkAdrReqParams_t linkAdrReq;
                 int8_t linkAdrDatarate = DR_0;
                 int8_t linkAdrTxPower = TX_POWER_0;
@@ -2189,13 +2169,13 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
                 // Process the ADR requests
                 status = RegionLinkAdrReq( LoRaMacRegion, &linkAdrReq, &linkAdrDatarate,
                                            &linkAdrTxPower, &linkAdrNbRep, &linkAdrNbBytesParsed );
-                //printf("**** status:%d\r\n",status);
+                //printf("status:%d\r\n",status);
                 if ( ( status & 0x07 ) == 0x07 ) {
                     LoRaMacParams.ChannelsDatarate = linkAdrDatarate;
                     //SaveDr();
                     LoRaMacParams.ChannelsTxPower = linkAdrTxPower;
                     LoRaMacParams.ChannelsNbRep = linkAdrNbRep;
-                    //printf("**** ChannelsDatarate:%d ChannelsTxPower:%d,ChannelsNbRep:%d\r\n",LoRaMacParams.ChannelsDatarate,LoRaMacParams.ChannelsTxPower,LoRaMacParams.ChannelsNbRep);
+                    //printf("ChannelsDatarate:%d ChannelsTxPower:%d,ChannelsNbRep:%d\r\n",LoRaMacParams.ChannelsDatarate,LoRaMacParams.ChannelsTxPower,LoRaMacParams.ChannelsNbRep);
                 }
 
                 // Add the answers to the buffer
@@ -2241,7 +2221,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
                     batteryLevel = LoRaMacCallbacks->GetBatteryLevel( );
                 }
 #ifdef LORAMAC_CLASSB_TESTCASE
-                DBG_PRINTF("**** receive SRV_MAC_DEV_STATUS_REQ\r\n");
+                DBG_PRINTF("receive SRV_MAC_DEV_STATUS_REQ\r\n");
 #endif
                 AddMacCommand( MOTE_MAC_DEV_STATUS_ANS, batteryLevel, snr );
                 break;
@@ -2343,7 +2323,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
 
                     sysTime = TimerAddSysTime( sysTimeCurrent, TimerSubSysTime( sysTimeAns, LastTxSysTime ) );
 #ifdef LORAMAC_CLASSB_TESTCASE
-                    DBG_PRINTF("**** receive SRV_MAC_DEVICE_TIME_ANS, set time=%u.%d\r\n", (unsigned int)sysTime.Seconds, sysTime.SubSeconds);
+                    DBG_PRINTF("receive SRV_MAC_DEVICE_TIME_ANS, set time=%u.%d\r\n", (unsigned int)sysTime.Seconds, sysTime.SubSeconds);
 #endif
                     // Apply the new system time.
                     TimerSetSysTime( sysTime );
@@ -2362,7 +2342,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
                     if( ( rxSlot != RX_SLOT_WIN_PING_SLOT ) && ( rxSlot != RX_SLOT_WIN_MULTICAST_SLOT ) )
                     {
 #ifdef LORAMAC_CLASSB_TESTCASE
-                        DBG_PRINTF("**** receive SRV_MAC_PING_SLOT_INFO_ANS in RX1\r\n");
+                        DBG_PRINTF("receive SRV_MAC_PING_SLOT_INFO_ANS in RX1\r\n");
 #endif
                         LoRaMacClassBPingSlotInfoAns( );
                     }
@@ -2380,7 +2360,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
                     frequency *= 100;
                     datarate = payload[macIndex++] & 0x0F;
 #ifdef LORAMAC_CLASSB_TESTCASE
-                    DBG_PRINTF("**** receive SRV_MAC_PING_SLOT_CHANNEL_REQ frequency=%u datarate=%u\r\n", (unsigned int)frequency, datarate);
+                    DBG_PRINTF("receive SRV_MAC_PING_SLOT_CHANNEL_REQ frequency=%u datarate=%u\r\n", (unsigned int)frequency, datarate);
 #endif
                     status = LoRaMacClassBPingSlotChannelReq( datarate, frequency );
                     AddMacCommand( MOTE_MAC_PING_SLOT_FREQ_ANS, status, 0 );
@@ -2407,7 +2387,7 @@ static void ProcessMacCommands( uint8_t *payload, uint8_t macIndex, uint8_t comm
                     frequency |= ( uint32_t )payload[macIndex++] << 16;
                     frequency *= 100;
 #ifdef LORAMAC_CLASSB_TESTCASE
-                    DBG_PRINTF("**** receive SRV_MAC_BEACON_FREQ_REQ frequency=%u\r\n", (unsigned int)frequency);
+                    DBG_PRINTF("receive SRV_MAC_BEACON_FREQ_REQ frequency=%u\r\n", (unsigned int)frequency);
 #endif
                     if( LoRaMacClassBBeaconFreqReq( frequency ) == true )
                     {
@@ -2460,7 +2440,7 @@ LoRaMacStatus_t Send( LoRaMacHeader_t *macHdr, uint8_t fPort, void *fBuffer, uin
     if( LoRaMacDeviceClass == CLASS_B )
     {
 #ifdef LORAMAC_CLASSB_TESTCASE
-        DBG_PRINTF("**** Send class b frame\r\n");
+        DBG_PRINTF("Send class b frame\r\n");
 #endif        
         fCtrl.Bits.FPending      = 1;
     }
@@ -2488,8 +2468,8 @@ LoRaMacStatus_t Send( LoRaMacHeader_t *macHdr, uint8_t fPort, void *fBuffer, uin
     status = ScheduleTx( );
 #ifdef CONFIG_LORA_VERIFY
     if (g_lora_debug == true) {
-        PRINTF_RAW("**** MacHdr major:%d rfu:%d mtype:%d\r\n", macHdr->Bits.Major, macHdr->Bits.RFU, macHdr->Bits.MType);
-        PRINTF_RAW("**** fCtrl rfu:%d Adr:%d AdrAckReq:%d fCtrl.Bits.Ack:%d\r\n", fCtrl.Bits.FPending, fCtrl.Bits.Adr, fCtrl.Bits.AdrAckReq, fCtrl.Bits.Ack);
+        PRINTF_RAW("MacHdr major:%d rfu:%d mtype:%d\r\n", macHdr->Bits.Major, macHdr->Bits.RFU, macHdr->Bits.MType);
+        PRINTF_RAW("fCtrl rfu:%d Adr:%d AdrAckReq:%d fCtrl.Bits.Ack:%d\r\n", fCtrl.Bits.FPending, fCtrl.Bits.Adr, fCtrl.Bits.AdrAckReq, fCtrl.Bits.Ack);
     }
 #endif
     return status;
@@ -2561,16 +2541,12 @@ static LoRaMacStatus_t ScheduleTx( void )
         RxWindow2Delay = LoRaMacParams.JoinAcceptDelay2 + RxWindow2Config.WindowOffset;
     } else {
         if ( ValidatePayloadLength( LoRaMacTxPayloadLen, LoRaMacParams.ChannelsDatarate, MacCommandsBufferIndex ) == false ) {
-            MAC_PRINTF("**** ScheduleTx: Error: Packet length too large for data rate/spreading factor\r\n");
             return LORAMAC_STATUS_LENGTH_ERROR;
         }
         RxWindow1Delay = LoRaMacParams.ReceiveDelay1 + RxWindow1Config.WindowOffset;
         RxWindow2Delay = LoRaMacParams.ReceiveDelay2 + RxWindow2Config.WindowOffset;
     }
-    //
-    // this index was being zeroed too soon. You can see where it was 
-    // by searching for "index zeroed too soon"
-    MacCommandsBufferIndex = 0;
+
     // Schedule transmission of frame
     if ( dutyCycleTimeOff == 0 ) {
 #ifdef  CONFIG_LORA_CAD   
@@ -2696,7 +2672,7 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
     switch ( macHdr->Bits.MType ) {
 #ifdef CONFIG_LORA_VERIFY
         if (g_lora_debug)
-            PRINTF_RAW("**** UpLoad frame %d being processed\r\n", macHdr->Bits.MType);
+            PRINTF_RAW("UpLoad frame %d being processed\r\n", macHdr->Bits.MType);
 #endif
         case FRAME_TYPE_JOIN_REQ:
             LoRaMacBufferPktLen = pktHeaderLen;
@@ -2709,7 +2685,7 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
             LoRaMacDevNonce = rand1( );
 #ifdef CONFIG_LORA_VERIFY
 			if (g_lora_debug) {
-                PRINTF_RAW("**** DevNonce:%d\rn\n", LoRaMacDevNonce);
+                PRINTF_RAW("DevNonce:%d\rn\n", LoRaMacDevNonce);
             }
 #endif
             LoRaMacBuffer[LoRaMacBufferPktLen++] = LoRaMacDevNonce & 0xFF;
@@ -2763,34 +2739,30 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
 
             if ( ( payload != NULL ) && ( LoRaMacTxPayloadLen > 0 ) ) {
                 if ( MacCommandsInNextTx == true ) {
-                   
-                    MAC_PRINTF("**** Add router Mac response to payload. MacCommandsBufferIndex: %d\r\n", MacCommandsBufferIndex);
                     // if MacCommands will fit copy to LoRaMacBuffer, will not
                     // be encrypted
+                    // printf("**** Add router Mac response to payload. MacCommandsBufferIndex: %d\r\n", MacCommandsBufferIndex);
 
                     if ( MacCommandsBufferIndex <= LORA_MAC_COMMAND_MAX_FOPTS_LENGTH ) {
                         fCtrl->Bits.FOptsLen += MacCommandsBufferIndex;
-                        // MAC_PRINTF("**** FOptsLen: %d \r\n", fCtrl->Bits.FOptsLen);
+
                         // Update FCtrl field with new value of OptionsLength
                         LoRaMacBuffer[0x05] = fCtrl->Value;
                         for ( i = 0; i < MacCommandsBufferIndex; i++ ) {
                             LoRaMacBuffer[pktHeaderLen++] = MacCommandsBuffer[i];
                         }
 
-                        MAC_PRINTF("**** Copied response to LoRaMacBuffer: FOptsLen: %d \r\n", fCtrl->Bits.FOptsLen);
-                        MAC_PRINTF("**** buffer content: \r\n\t");
-                        for (uint8_t i = 0; i < pktHeaderLen; i++) {
-                            MAC_PRINTF("0x%x ", ((uint8_t *) LoRaMacBuffer)[i]);
-                        }
-                        MAC_PRINTF("\r\n");
+                        // printf("**** Copied response to LoRaMacBuffer: FOptsLen: %d \r\n", fCtrl->Bits.FOptsLen);
+                        // printf("**** buffer content: \r\n\t");
+                        // for (uint8_t i = 0; i < pktHeaderLen; i++) {
+                        //     printf("0x%x ", ((uint8_t *) LoRaMacBuffer)[i]);
+                        // }
+                        // printf("\r\n");
                        
                     } else {
                         // commands do not fit in LoRaMacBuffer, put them in user buffer.
                         // they will be encrypted 
-                        MAC_PRINTF("**** MAC response too large for LoRaMacBuffer, copied to user buffer: length: %d \r\n", MacCommandsBufferIndex);
-                        // why did we not originally set FOptsLen here, we did
-                        // above and below/??
-                        fCtrl->Bits.FOptsLen += MacCommandsBufferIndex;
+                        //printf("**** MAC response too large for LoRaMacBuffer, copied to user buffer: length: %d \r\n", MacCommandsBufferIndex);
                         LoRaMacTxPayloadLen = MacCommandsBufferIndex;
                         payload = MacCommandsBuffer;
                         framePort = 0;
@@ -2799,21 +2771,11 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
             } else {
                 if ( ( MacCommandsBufferIndex > 0 ) && ( MacCommandsInNextTx == true ) ) {
                     // We have response to send, but have no payload buffer from user
-                    // use the user payload area, data will be encrypted
-                    MAC_PRINTF("**** No user payload, let Mac Response use user payload area. Data will be encrypted. Buffer length: %d \r\n", MacCommandsBufferIndex);
-
-                    MAC_PRINTF("**** Send MAC response only\r\n");
-                    fCtrl->Bits.FOptsLen += MacCommandsBufferIndex;
+                    //printf("**** No user payload, let Mac Response use user payload area. Data will be encrypted. Buffer length: %d \r\n", MacCommandsBufferIndex);
+                    //printf("**** Send MAC response only\r\n");
                     LoRaMacTxPayloadLen = MacCommandsBufferIndex;
                     payload = MacCommandsBuffer;
                     framePort = 0;
-
-                    MAC_PRINTF("**** Response packet buffer \r\n\t");
-                    for (uint8_t i = 0; i < LoRaMacTxPayloadLen; i++) {
-                            MAC_PRINTF("0x%x ", ((uint8_t *) payload)[i]);
-                    }
-                    MAC_PRINTF("\r\n");
-                    
                 }
             }
             MacCommandsInNextTx = false;
@@ -2830,18 +2792,15 @@ LoRaMacStatus_t PrepareFrame( LoRaMacHeader_t *macHdr, LoRaMacFrameCtrl_t *fCtrl
                     LoRaMacTxPayloadLen = LORAMAC_PHY_MAXPAYLOAD - 4 - pktHeaderLen;
                 }
 
-                MAC_PRINTF("**** payload before encryption\r\n\t");
-                for (uint8_t i = 0; i < LoRaMacTxPayloadLen; i++) {
-                    MAC_PRINTF("0x%x ", ((uint8_t *) payload)[i]);
-                    }
-                MAC_PRINTF("\r\n");
+                // printf("**** payload before encryption\r\n\t");
+                // for (uint8_t i = 0; i < LoRaMacTxPayloadLen; i++) {
+                //     printf("0x%x ", ((uint8_t *) payload)[i]);
+                // }
+                // printf("\r\n");
 
                 if ( framePort == 0 ) {
-                    // NOTE: Incorrect: -> Reset buffer index as the mac commands are being sent on port 0
-                    // this was being done too soon, net result was the MAC 
-                    // command was not being carried forward to next uplink attempt.
-                    // to find new zero location search for "index zeroed too soon"
-                    // MacCommandsBufferIndex = 0;
+                    // Reset buffer index as the mac commands are being sent on port 0
+                    MacCommandsBufferIndex = 0;
                     LoRaMacPayloadEncrypt( (uint8_t * ) payload, LoRaMacTxPayloadLen, LoRaMacNwkSKey, LoRaMacDevAddr, UP_LINK,
                                            UpLinkCounter, &LoRaMacBuffer[pktHeaderLen] );
                 } else {
@@ -3169,8 +3128,7 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
     return LORAMAC_STATUS_OK;
 }
 
-// extern uint16_t sendCount;
-LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
+LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo )
 {
     AdrNextParams_t adrNext;
     GetPhyParams_t getPhy;
@@ -3185,11 +3143,6 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
     if ( txInfo == NULL ) {
         return LORAMAC_STATUS_PARAMETER_INVALID;
     }
-
-    // DEBUG if(  (sendCount == 4) || (sendCount == 8) || (sendCount == 13) )
-    // {
-    //     AdrAckCounter = 96;
-    // } 
 
     // Setup ADR request
     adrNext.UpdateChanMask = false;
@@ -3208,8 +3161,8 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo)
 
     // We call the function for information purposes only. We don't want to
     // apply the datarate, the tx power and the ADR ack counter.
-
     RegionAdrNext( LoRaMacRegion, &adrNext, &datarate, &txPower, &AdrAckCounter, true );
+
     // Setup PHY request
     getPhy.UplinkDwellTime = LoRaMacParams.UplinkDwellTime;
     getPhy.Datarate = datarate;
@@ -3837,7 +3790,7 @@ LoRaMacStatus_t LoRaMacMlmeRequest( MlmeReq_t *mlmeRequest )
             LoRaMacParams.ChannelsDatarate = RegionAlternateDr( LoRaMacRegion, &altDr );
 #ifdef CONFIG_LORA_VERIFY
             if (g_lora_debug == true)
-                PRINTF_RAW("**** MacHdr major:%d rfu:%d mtype:%d\r\n", macHdr.Bits.Major, macHdr.Bits.RFU, macHdr.Bits.MType);
+                PRINTF_RAW("MacHdr major:%d rfu:%d mtype:%d\r\n", macHdr.Bits.Major, macHdr.Bits.RFU, macHdr.Bits.MType);
 #endif
             status = Send( &macHdr, 0, NULL, 0 );
             break;
@@ -3971,30 +3924,6 @@ LoRaMacStatus_t LoRaMacMcpsRequest( McpsReq_t *mcpsRequest )
     uint16_t fBufferSize;
     int8_t datarate;
     bool readyToSend = false;
-
-    // if ((fBufferSize == 0) && (fBuffer == NULL) && (MacCommandsInNextTx != true))
-    // {
-    //     MAC_PRINTF("**** LoRaMacMcpsRequest(): No mac commands pending\r\n");
-    //     return LORAMAC_STATUS_OK;
-    // }
- 
-    if( mcpsRequest->Type == MCPS_UNCONFIRMED)
-    {
-        // empty user packet buffer?
-        if ((mcpsRequest->Req.Unconfirmed.fBuffer == NULL) && 
-            (mcpsRequest->Req.Unconfirmed.fBufferSize == 0 ))
-        {
-            // if we do not have a pending mac response just return with
-            // nothing sent otherwise continue and send the empty
-            //  user packet and the MAC response
-            if (MacCommandsInNextTx == false)
-            {
-                return LORAMAC_STATUS_OK;
-            }
-            MAC_PRINTF("** Sending MAC command response only ...: \r\n");
-        }
-    }
-
 
 #ifdef CONFIG_LORA_VERIFY
 	if (g_lora_debug) {
