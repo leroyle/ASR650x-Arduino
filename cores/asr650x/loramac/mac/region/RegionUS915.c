@@ -477,6 +477,7 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
     // Report back the adr ack counter
     *adrAckCounter = adrNext->AdrAckCounter;
 
+    MAC_PRINTF("****** adrAckCounter: %d\r\n", *adrAckCounter);
     if( adrNext->AdrEnabled == true )
     {
         if( datarate == US915_TX_MIN_DATARATE )
@@ -488,6 +489,7 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
         {
             if( (adrNext->AdrAckCounter >= US915_ADR_ACK_LIMIT) && (infoOnly == false) )
             {
+                MAC_PRINTF("****** US915_ADR_ACK_LIMIT Limit exceeded, reset txPower to max\r\n");
                 adrAckReq = true;
                 txPower = US915_MAX_TX_POWER;
             }
@@ -500,6 +502,7 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
                 if( ( adrNext->AdrAckCounter % US915_ADR_ACK_DELAY ) == 1 )
                 {
                     // Decrease the datarate
+                    MAC_PRINTF("****** ADR_ACK/ACK_Delay Limit exceeded, reset txPower to max\r\n");
                     getPhy.Attribute = PHY_NEXT_LOWER_TX_DR;
                     getPhy.Datarate = datarate;
                     getPhy.UplinkDwellTime = adrNext->UplinkDwellTime;
@@ -525,6 +528,8 @@ bool RegionUS915AdrNext( AdrNextParams_t* adrNext, int8_t* drOut, int8_t* txPowO
             }
         }
     }
+
+    MAC_PRINTF("****** RegionUS915AdrNext: return datarate: %d, txPower: %d\r\n", datarate, txPower);
 
     *drOut = datarate;
     *txPowOut = txPower;
