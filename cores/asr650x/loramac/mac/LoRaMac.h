@@ -2262,8 +2262,12 @@ LoRaMacStatus_t LoRaMacQueryTxPossible( uint8_t size, LoRaMacTxInfo_t *txInfo );
  * \details Reset the data rate to that specified by the application
  *
  * \param   [IN] datarate - new data rate.
+ *
+ * \retval  LoRaMacStatus_t Status of the operation. Possible returns are:
+ *          \ref LORAMAC_STATUS_OK,
+ *          \ref LORAMAC_STATUS_DATARATE_INVALID.
  */
-void LoRaMacSetDataRate( int8_t datarate );
+LoRaMacStatus_t LoRaMacSetDataRate( int8_t datarate );
 
 /*!
  * \brief   Get the current Data Rate 

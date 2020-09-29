@@ -98,20 +98,22 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 	
 	McpsReq_t mcpsReq;
 	LoRaMacTxInfo_t txInfo;
+	// HELTEC NOTE: send() API return code changes 
 	LoRaMacStatus_t macStatus = LORAMAC_STATUS_OK;
     LoRaMacStatus_t packetLenStatus;
 
-	// make sure we have the latest data rate. Could be
-	// changed at the app level or via ADR, if error use default
-	MibRequestConfirm_t mibReq;
-	mibReq.Type = MIB_CHANNELS_DATARATE;
-	if( LoRaMacMibGetRequestConfirm( &mibReq ) == LORAMAC_STATUS_OK )
+	// HELTEC NOTE: DR Change 6 of 8
+	// make sure we have the latest data rate from the MAC layer in case
+	// ADR ON and network has suggested DR change.
+	// if error we use #idef defined default
+
+	LoRaMacStatus_t drGetStatus = LoRaMacGetDataRate(&currentDataRate);
+	if (drGetStatus != LORAMAC_STATUS_OK)
 	{
-		currentDataRate=mibReq.Param.ChannelsDatarate;
-  	} else {
 		currentDataRate = default_DR;
 	}
 	 
+	//HELTEC NOTE: send() API return code changes 
 	*sendStatus = LORAMAC_STATUS_OK;
 	packetLenStatus = LoRaMacQueryTxPossible( appDataSize, &txInfo );
 
@@ -148,7 +150,12 @@ bool SendFrame( LoRaMacStatus_t * sendStatus)
 
 	macStatus = LoRaMacMcpsRequest( &mcpsReq );
 
-	// set status for app layer
+	// HELTEC NOTE: send() API return code changes 
+	//  Here we return send status up to device app layer. This would
+	//  not work if ever the send() is done asychronously,
+	//  but seems there should be some mechanism to notify the
+	//  device app of a send failure???  
+	// 
 	if (packetLenStatus != LORAMAC_STATUS_OK) {
 			*sendStatus = packetLenStatus;
 	} else if (macStatus != LORAMAC_STATUS_OK) {
@@ -654,6 +661,7 @@ void LoRaWanClass::join()
 	}
 }
 
+// HELTEC NOTE: send() API return code changes 
 LoRaMacStatus_t LoRaWanClass::send()
 {
 	LoRaMacStatus_t sendStatus;
@@ -670,6 +678,7 @@ LoRaMacStatus_t LoRaWanClass::send()
 			LoRaMacMibSetRequestConfirm( &mibReq );
 		}
 		
+		// HELTEC NOTE: send() API return code changes 
 		nextTx = SendFrame(&sendStatus);
 		if (sendStatus != LORAMAC_STATUS_OK)
 		{
@@ -691,11 +700,17 @@ void LoRaWanClass::sleep()
 	// Process Radio IRQ
 	Radio.IrqProcess( );
 }
+
+// HELTEC NOTE: DR Change 7 of 8
+// inform the MAC layer of the user override of DR
 void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 {
 	LoRaMacSetDataRate(dataRate);
 }
 
+
+// HELTEC NOTE: DR Change 8 of 8
+// get the current DR setting from the MAC layer 
 /**
  * Returns data rate or -1 if the call fails
 */
