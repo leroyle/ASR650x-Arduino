@@ -703,9 +703,9 @@ void LoRaWanClass::sleep()
 
 // HELTEC NOTE: DR Change 7 of 8
 // inform the MAC layer of the user override of DR
-void LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
+LoRaMacStatus_t LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
 {
-	LoRaMacSetDataRate(dataRate);
+	return LoRaMacSetDataRate(dataRate);
 }
 
 
