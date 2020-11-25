@@ -59,7 +59,7 @@ public:
   LoRaMacStatus_t send();
   void cycle(uint32_t dutyCycle);
   void sleep();
-  void setDataRateForNoADR(int8_t dataRate);
+  LoRaMacStatus_t setDataRateForNoADR(int8_t dataRate);
   int8_t getDataRateForNoADR();
   void ifskipjoin();
   void generateDeveuiByChipID();
