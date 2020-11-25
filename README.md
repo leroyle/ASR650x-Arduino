@@ -12,6 +12,43 @@ PlatformioL Linux:  ~/.platformio/packages/framework-arduinoasrmicro650x
 
 We will periodically try to pull in any changes that Heltec commits, but no guarantees.
 
+## API Changes
+
+#### Set/Get Datarate
+The base code did not initially provide a mechanism for the device application to dynamically change the data rate. Heltec
+did eventually supply a set API but no get API. This set API is more robust than the Heltec version.
+```
+LoRaMacStatus_t LoRaWanClass::setDataRateForNoADR(int8_t dataRate)
+
+int8_t LoRaWanClass::getDataRateForNoADR()  // returns -1 if the call fails
+```
+
+The default data rate is set via a #define in libraries/LoRa/src/LoRaWan_APP.cpp
+```
+/*loraWan default Dr for ADR when adr disabled*/
+#if defined(REGION_US915) || defined(REGION_US915_HYBRID)
+int8_t default_DR = 3;
+#else
+int8_t default_DR = 5;
+#endif
+```
+#### LoRaWan.send()
+The Send() API will returns a status that can be checked for sucess/failure. Sends can fail for instance if your data packet size exceeds the maximum size allowed by the current data rate.
+```
+LoRaMacStatus_t sendStatus = LoRaWAN.send();
+```
+
+##### Sample device application
+
+There is a new sample at ```HeliumExamples/Cube_Helium_NOGPS```
+This sample uses the above API and also demonstrates using a couple of other runtime API calls to set/get ADR enable, power setting and display a custom string on the OLED display.
+
+
+### Runtime Changes from base
+
+Nov 25
+ - add return status to ```setDataRateForNoADR()```
+
 Sept 25 
  - merge in base fork changes
 
